@@ -15,10 +15,7 @@ class AuthResponseDto {
     return AuthResponseDto(
       token: json['token'] ?? '',
       username: json['username'] ?? '',
-      roles: (json['roles'] as List<dynamic>?)
-          ?.map((role) => role.toString())
-          .toList() ??
-          [],
+      roles: ['CUSTOMER'],
     );
   }
 
