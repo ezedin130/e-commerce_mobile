@@ -1,14 +1,36 @@
 import 'package:e_commerce/pages/auth/register_page.dart';
+import 'package:e_commerce/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../component/reusable_textfield.dart';
+import '../../model/user_login_dto.dart';
+import '../../util/snackbar.dart';
+import '../home/home_page.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  final authService = AuthService();
+  void handleLogin(BuildContext context) async {
+    final dto = UserLoginDto(
+      userName: usernameController.text.trim(),
+      password: passwordController.text.trim(),
+    );
 
+    final response = await authService.login(dto);
+
+    if (response != null) {
+      showSnackBar(context, "Welcome ${response.username}!");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => HomePage()),
+      );
+    } else {
+      showSnackBar(context, "Invalid username or password");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +92,9 @@ class LoginPage extends StatelessWidget {
                   ),
                   elevation: 3,
                 ),
-                onPressed: (){},
+                onPressed: (){
+                  handleLogin(context);
+                },
                 child: Text('Login',style: GoogleFonts.lato(
                     fontSize: 15.0,
                     fontWeight: FontWeight.bold,
