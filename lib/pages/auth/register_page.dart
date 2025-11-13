@@ -1,13 +1,64 @@
 import 'package:e_commerce/pages/auth/login_page.dart';
+import 'package:e_commerce/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../component/reusable_textfield.dart';
+import '../../model/user_register_dto.dart';
 
 class RegisterPage extends StatelessWidget {
    RegisterPage({super.key});
-   final firstnameController = TextEditingController();
-   final lastnameController = TextEditingController();
+   final authService = AuthService();
+   final firstNameController = TextEditingController();
+   final lastNameController = TextEditingController();
+   void handleRegister(BuildContext context) async {
+     final dto = UserRegisterDto(
+       firstName: firstNameController.text.trim(),
+       lastName: lastNameController.text.trim(),
+       roleIds: [4]
+     );
+
+     final response = await authService.register(dto);
+
+     if (response != null) {
+       showDialog(
+         context: context,
+         barrierDismissible: false,
+         builder: (_) => AlertDialog(
+           title: Text('Your Account Details'),
+           content: Column(
+             mainAxisSize: MainAxisSize.min,
+             children: [
+               Text('Username: ${response.userName}'),
+               Text('Password: ${response.userName}123'),
+               SizedBox(height: 10),
+               Text(
+                 'Please change your password after login.',
+                 style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+               ),
+             ],
+           ),
+           actions: [
+             TextButton(
+               onPressed: () {
+                 Navigator.pop(context);
+                 Navigator.pushReplacement(
+                   context,
+                   MaterialPageRoute(builder: (_) => LoginPage()),
+                 );
+               },
+               child: Text('OK'),
+             ),
+           ],
+         ),
+       );
+     }
+
+     else {
+       ScaffoldMessenger.of(context)
+           .showSnackBar(SnackBar(content: Text('Registration failed')));
+     }
+   }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +91,7 @@ class RegisterPage extends StatelessWidget {
             height: 25.0,
           ),
           ReUsableTextField(
-            controller: firstnameController,
+            controller: firstNameController,
             text: "first name",
             obscure: false,
           ),
@@ -48,7 +99,7 @@ class RegisterPage extends StatelessWidget {
             height: 15.0,
           ),
           ReUsableTextField(
-            controller: lastnameController,
+            controller: lastNameController,
             text: "last name",
             obscure: false,
           ),
@@ -68,7 +119,9 @@ class RegisterPage extends StatelessWidget {
                   ),
                   elevation: 3,
                 ),
-                onPressed: (){},
+                onPressed: (){
+                  handleRegister(context);
+                },
                 child: Text('Register',style: GoogleFonts.lato(
                     fontSize: 15.0,
                     fontWeight: FontWeight.bold,
