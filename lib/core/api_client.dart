@@ -11,7 +11,10 @@ class ApiClient {
     return Uri.parse('$baseUrl$endpoint');
   }
 
-  static Future<http.Response> post(String endpoint, String body) async {
+  static Future<http.Response> login(String endpoint, String body) async {
+    return await http.post(uri(endpoint), headers: headers, body: body);
+  }
+  static Future<http.Response> register(String endpoint, String body) async {
     return await http.post(uri(endpoint), headers: headers, body: body);
   }
 }
